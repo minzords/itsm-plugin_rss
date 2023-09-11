@@ -34,6 +34,77 @@
   * @return boolean
   */
 function plugin_rssfeed_install(): bool {
+    global $DB;
+
+    $migration = new Migration(101);
+    
+    if (!$DB->tableExists("glpi_plugin_rssfeed_rssfeeds")) {
+        $query = "CREATE TABLE glpi_plugin_rssfeed_rssfeeds (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            name VARCHAR(255) NULL DEFAULT NULL,
+            user_id INT(11) NOT NULL DEFAULT '0',
+            comment TEXT NULL,
+            url TEXT NULL,
+            refresh_rate INT(11) NOT NULL DEFAULT '86400',
+            max_items INT(11) NOT NULL DEFAULT '20',
+            have_error TINYINT(1) NOT NULL DEFAULT '0',
+            is_active TINYINT(1) NOT NULL DEFAULT '0',
+            date_mod DATETIME NULL,
+            date_creation DATETIME NULL,
+            PRIMARY KEY (id)
+        );
+        ";
+        $DB->queryOrDie($query, $DB->error());
+    }
+
+    if (!$DB->tableExists("glpi_plugin_rssfeed_entities")) {
+        $query = "CREATE TABLE glpi_plugin_rssfeed_entities (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            rssfeeds_id INT(11) NOT NULL DEFAULT '0',
+            entities_id INT(11) NOT NULL DEFAULT '0',
+            is_recursive TINYINT(1) NOT NULL DEFAULT '0',
+            PRIMARY KEY (id)
+        );
+        ";
+        $DB->queryOrDie($query, $DB->error());
+    }
+
+    if (!$DB->tableExists("glpi_plugin_rssfeed_groups")) {
+        $query = "CREATE TABLE glpi_plugin_rssfeed_groups (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            rssfeeds_id INT(11) NOT NULL DEFAULT '0',
+            groups_id INT(11) NOT NULL DEFAULT '0',
+            entities_id INT(11) NOT NULL DEFAULT '-1',
+            is_recursive TINYINT(1) NOT NULL DEFAULT '0',
+            PRIMARY KEY (id)
+        );
+        ";
+        $DB->queryOrDie($query, $DB->error());
+    }
+
+    if (!$DB->tableExists("glpi_plugin_rssfeed_profiles")) {
+        $query = "CREATE TABLE glpi_plugin_rssfeed_profiles (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            rssfeeds_id INT(11) NOT NULL DEFAULT '0',
+            profiles_id INT(11) NOT NULL DEFAULT '0',
+            entities_id INT(11) NOT NULL DEFAULT '-1',
+            is_recursive TINYINT(1) NOT NULL DEFAULT '0',
+            PRIMARY KEY (id)
+        );
+        ";
+        $DB->queryOrDie($query, $DB->error());
+    }
+
+    if (!$DB->tableExists("glpi_plugin_rssfeed_users")) {
+        $query = "CREATE TABLE glpi_plugin_rssfeed_users (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            rssfeeds_id INT(11) NOT NULL DEFAULT '0',
+            users_id INT(11) NOT NULL DEFAULT '0',
+            PRIMARY KEY (id)
+        );
+        ";
+        $DB->queryOrDie($query, $DB->error());
+    }
     return true ;
 }
 
@@ -43,5 +114,27 @@ function plugin_rssfeed_install(): bool {
  * @return boolean
  */
 function plugin_rssfeed_uninstall(): bool {
+    global $DB;
+
+    if($DB->tableExists('glpi_plugin_rssfeed_rssfeeds')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_rssfeed_rssfeeds`",$DB->error());
+    }
+
+    if($DB->tableExists('glpi_plugin_rssfeed_entities')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_rssfeed_entities`",$DB->error());
+    }
+
+    if($DB->tableExists('glpi_plugin_rssfeed_groups')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_rssfeed_groups`",$DB->error());
+    }
+
+    if($DB->tableExists('glpi_plugin_rssfeed_profiles')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_rssfeed_profiles`",$DB->error());
+    }
+
+    if($DB->tableExists('glpi_plugin_rssfeed_users')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_rssfeed_users`",$DB->error());
+    }
+
     return true;
 }

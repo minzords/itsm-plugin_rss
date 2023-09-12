@@ -39,6 +39,9 @@ use Glpi\Event;
 
 include ('../../../inc/includes.php');
 
+Html::header(__("RSS Flux", "rssfeed"), $_SERVER['PHP_SELF'], 'tools', PluginRssfeedConfig::class);
+
+
 if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }

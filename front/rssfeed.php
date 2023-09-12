@@ -36,6 +36,9 @@
 
 include ('../../../inc/includes.php');
 
+$PLUGIN_HOOKS['menu_toadd']['rssfeed'] = ['tools' => array(PluginRssfeedConfig::class)];
+
+
 Session::checkCentralAccess();
 
 Html::header(PluginRssfeedRssfeed::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "tools", "rssfeed");

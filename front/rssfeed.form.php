@@ -36,6 +36,7 @@
 
 use Glpi\Event;
 
+
 include ('../../../inc/includes.php');
 
 if (!isset($_GET["id"])) {
@@ -83,18 +84,18 @@ if (isset($_POST["add"])) {
 
          case 'Group' :
             if (isset($_POST['groups_id']) && $_POST['groups_id']) {
-               $item = new Group_RSSFeed();
+               $item = new PluginRssfeedGroup();
             }
             break;
 
          case 'Profile' :
             if (isset($_POST['profiles_id']) && $_POST['profiles_id']) {
-               $item = new Profile_RSSFeed();
+               $item = new PluginRssfeedProfile();
             }
             break;
 
          case 'Entity' :
-            $item = new Entity_RSSFeed();
+            $item = new PluginRssfeedEntity();
             break;
       }
       if (!is_null($item)) {

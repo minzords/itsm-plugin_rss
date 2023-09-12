@@ -94,15 +94,14 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
 
 
    static function canView() {
-
       return (Session::haveRight('rssfeed_public', READ)
               || Session::getCurrentInterface() != 'helpdesk');
    }
 
 
    function canViewItem() {
+            // Is my rssfeed or is in visibility
 
-      // Is my rssfeed or is in visibility
       return (($this->fields['users_id'] == Session::getLoginUserID())
               || (Session::haveRight('rssfeed_public', READ)
                   && $this->haveVisibilityAccess()));
@@ -116,7 +115,6 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
 
 
    function canUpdateItem() {
-
       return (($this->fields['users_id'] == Session::getLoginUserID())
               || (Session::haveRight('rssfeed_public', UPDATE)
                   && $this->haveVisibilityAccess()));
@@ -147,7 +145,6 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
     * @see CommonDBTM::canPurgeItem()
    **/
    function canPurgeItem() {
-
       return (($this->fields['users_id'] == Session::getLoginUserID())
               || (Session::haveRight(self::$rightname, PURGE)
                   && $this->haveVisibilityAccess()));
@@ -264,17 +261,17 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
 
       //JOINs
       // Users
-      $join['glpi_rssfeeds_users'] = [
+      $join['glpi_plugin_rssfeed_users'] = [
          'ON' => [
-            'glpi_rssfeeds_users'   => 'rssfeeds_id',
-            'glpi_rssfeeds'         => 'id'
+            'glpi_plugin_rssfeed_users'   => 'rssfeeds_id',
+            'glpi_plugin_rssfeed_rssfeeds'         => 'id'
          ]
       ];
 
       $where = [
          'OR' => [
             self::getTable() . '.users_id'   => Session::getLoginUserID(),
-            'glpi_rssfeeds_users.users_id'   => Session::getLoginUserID()
+            'glpi_plugin_rssfeed_users.users_id'   => Session::getLoginUserID()
          ]
       ];
       $orwhere = [];
@@ -282,10 +279,10 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
       // Groups
       if ($forceall
           || (isset($_SESSION["glpigroups"]) && count($_SESSION["glpigroups"]))) {
-         $join['glpi_groups_rssfeeds'] = [
+         $join['glpi_plugin_rssfeed_groups'] = [
             'ON' => [
-               'glpi_groups_rssfeeds'  => 'rssfeeds_id',
-               'glpi_rssfeeds'         => 'id'
+               'glpi_plugin_rssfeed_groups'  => 'rssfeeds_id',
+               'glpi_plugin_rssfeed_rssfeeds'         => 'id'
             ]
          ];
       }
@@ -293,11 +290,11 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
       if (isset($_SESSION["glpigroups"]) && count($_SESSION["glpigroups"])) {
          $restrict = getEntitiesRestrictCriteria('glpi_groups_rssfeeds', '', '', true);
          $orwhere[] = [
-            'glpi_groups_rssfeeds.groups_id' => count($_SESSION["glpigroups"])
+            'glpi_plugin_rssfeed_groups.groups_id' => count($_SESSION["glpigroups"])
                                                       ? $_SESSION["glpigroups"]
                                                       : [-1],
             'OR' => [
-               'glpi_groups_rssfeeds.entities_id' => ['<', '0'],
+               'glpi_plugin_rssfeed_groups.entities_id' => ['<', '0'],
             ] + $restrict
          ];
       }
@@ -306,10 +303,10 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
       if ($forceall
           || (isset($_SESSION["glpiactiveprofile"])
               && isset($_SESSION["glpiactiveprofile"]['id']))) {
-         $join['glpi_profiles_rssfeeds'] = [
+         $join['glpi_plugin_rssfeed_profiles'] = [
             'ON' => [
-               'glpi_profiles_rssfeeds'   => 'rssfeeds_id',
-               'glpi_rssfeeds'            => 'id'
+               'glpi_plugin_rssfeed_profiles'   => 'rssfeeds_id',
+               'glpi_plugin_rssfeed_rssfeeds'            => 'id'
             ]
          ];
       }
@@ -320,12 +317,12 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
             $restrict = [true];
          }
          $ors = [
-            'glpi_profiles_rssfeeds.entities_id' => ['<', '0'],
+            'glpi_plugin_rssfeed_profiles.entities_id' => ['<', '0'],
             $restrict
          ];
 
          $orwhere[] = [
-            'glpi_profiles_rssfeeds.profiles_id' => $_SESSION["glpiactiveprofile"]['id'],
+            'glpi_plugin_rssfeed_profiles.profiles_id' => $_SESSION["glpiactiveprofile"]['id'],
             'OR' => $ors
          ];
       }
@@ -333,17 +330,17 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
       // Entities
       if ($forceall
           || (isset($_SESSION["glpiactiveentities"]) && count($_SESSION["glpiactiveentities"]))) {
-         $join['glpi_entities_rssfeeds'] = [
+         $join['glpi_plugin_rssfeed_entities'] = [
             'ON' => [
-               'glpi_entities_rssfeeds'   => 'rssfeeds_id',
-               'glpi_rssfeeds'            => 'id'
+               'glpi_plugin_rssfeed_entities'   => 'rssfeeds_id',
+               'glpi_plugin_rssfeed_rssfeeds'            => 'id'
             ]
          ];
       }
 
       if (isset($_SESSION["glpiactiveentities"]) && count($_SESSION["glpiactiveentities"])) {
          // Force complete SQL not summary when access to all entities
-         $restrict = getEntitiesRestrictCriteria('glpi_entities_rssfeeds', '', '', true, true);
+         $restrict = getEntitiesRestrictCriteria('glpi_plugin_rssfeed_entities', '', '', true, true);
          if (count($restrict)) {
             $orwhere[] = $restrict;
          }
@@ -523,7 +520,6 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
     * @see CommonGLPI::getTabNameForItem()
    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
       if (self::canView()) {
          $nb = 0;
          switch ($item->getType()) {
@@ -563,7 +559,6 @@ class PluginRssfeedRssfeed extends CommonDBVisible implements ExtraVisibilityCri
     * @param $withtemplate (default 0)
    **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
       switch ($item->getType()) {
          case 'RSSFeed' :
             switch ($tabnum) {

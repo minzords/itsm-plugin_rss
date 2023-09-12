@@ -99,4 +99,11 @@ function plugin_init_rssfeed(): void {
 
     // Config
     $PLUGIN_HOOKS['config_page']['rssfeed'] = 'front/rssfeed.php';
+    // add new tab in tools
+    $PLUGIN_HOOKS['menu_toadd']['rssfeed'] = ['tools' => array(PluginRssfeedConfig::class)];
+
+    // If GLPI_RSS_DIR is not defined, define it
+    if (!defined('GLPI_RSS_DIR')) {
+        define('GLPI_RSS_DIR', '{GLPI_VAR_DIR}/_rss');
+    }
 }

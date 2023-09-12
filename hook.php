@@ -42,7 +42,7 @@ function plugin_rssfeed_install(): bool {
         $query = "CREATE TABLE glpi_plugin_rssfeed_rssfeeds (
             id INT(11) NOT NULL AUTO_INCREMENT,
             name VARCHAR(255) NULL DEFAULT NULL,
-            user_id INT(11) NOT NULL DEFAULT '0',
+            users_id INT(11) NOT NULL DEFAULT '0',
             comment TEXT NULL,
             url TEXT NULL,
             refresh_rate INT(11) NOT NULL DEFAULT '86400',

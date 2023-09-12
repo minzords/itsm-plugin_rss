@@ -40,6 +40,6 @@ Session::checkCentralAccess();
 
 Html::header(PluginRssfeedRssfeed::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], "tools", "rssfeed");
 
-Search::show('RSSFeed');
+Search::show('PluginRssfeedRssfeed');
 
 Html::footer();
